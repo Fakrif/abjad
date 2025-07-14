@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <title>Abjad Bahasa Indonesia</title>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h2>🎤 Tebak Huruf Abjad dengan Suara</h2>
+
+            <div class="setting">
+                <label for="iptrange">Ubah Ukuran Huruf : <span id="sizeValue">80</span>px</label>
+                <input type="range" id="slider" min="60" max="100" value="80" id="iptrange">
+            </div>
+            <div class="setting" style="display: flex;flex-direction: column;"><span>Jumlah pertanyaan</span>
+                <select id="jml">
+                    <option value="2">2</option>
+                    <option value="10">10</option>
+                    <option value="26">All</option>
+                </select>
+            </div>
+
+        </header>
+
+        <div id="btn_layout">
+            <button id="mulai">Mulai Bicara</button>
+            <p id="output">Teks akan muncul di sini...</p>
+
+        </div>
+        <div class="kembali">
+            <a class="btn btn-back" href="index.html">Kembali ke Menu</a>
+        </div>
+    </div>
+
+    <script>
+
+        const dua_suku = ["bola", "nasi", "baju", "sapi", "mata", "bayi", "meja", "kuda", "padi", "gigi", "roti", "kaki", "kaca",
+            "lari", "api", "pita", "ratu", "jari", "saku", "tali", "lima"]
+
+
+        function fisherYatesShuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                // ambil indeks acak dari 0 sampai i
+                const j = Math.floor(Math.random() * (i + 1));
+                // tukar elemen ke-i dan ke-j
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+
+
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+        if (!SpeechRecognition) {
+            alert("Browser kamu tidak mendukung Speech Recognition");
+        } else {
+            const recognition = new SpeechRecognition();
+            recognition.lang = "id-ID"; // Bahasa Indonesia
+            recognition.continuous = false; // hanya 1 kalimat
+            recognition.interimResults = false; // hasil final saja
+
+            const output = document.getElementById("output");
+            const btn = document.getElementById("mulai");
+
+            btn.onclick = () => {
+                recognition.start(); // Mulai mendengarkan
+                output.textContent = "Mendengarkan...";
+            };
+
+            recognition.onresult = (event) => {
+                const teks = event.results[0][0].transcript;
+                output.textContent = "Kamu berkata: " + teks;
+            };
+
+            recognition.onerror = (event) => {
+                output.textContent = "Terjadi kesalahan: " + event.error;
+            };
+        }
+
+    </script>
+
+</body>
+
+</html>

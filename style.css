@@ -1,0 +1,106 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body{
+  font-family: "Roboto", sans-serif;
+  font-size: 16px;
+}
+
+.container{
+    width: min(1080px,100%);
+    margin-inline:auto;
+    padding-bottom: 1em;
+}
+
+
+.menu{
+    box-shadow: 3px 3px 3px gray;
+    width: min(400px,90%);
+    margin-top: 5%;
+    margin-inline: auto;
+    padding: 1em;
+    background-color: rgb(15, 108, 124);
+    h1{
+        color: white;
+        text-align: center;
+    }
+    a{
+        display: block;
+        background-color: whitesmoke;
+        padding: 0.5em 1em;
+        margin: 1em;
+        border-radius: 3px;
+        text-decoration: none;
+        box-shadow: 3px 3px 3px gray;
+        color: rgb(15, 108, 124);
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+}
+
+
+
+
+
+.btn{    
+    padding: 0.5em 1em;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#btn_layout{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 12px;
+}
+.setting{
+    display: flex;
+    flex-direction: column;
+    max-width: 200px;
+    margin:12px auto;
+
+    
+}
+.huruf{
+    box-shadow: 3px 3px 3px gray;
+    border-radius: 20px;
+    margin: 9px;
+    border:0.2px solid rgb(15, 108, 124);
+    cursor:pointer;
+}
+header{
+    background-color: rgb(15, 108, 124);
+    padding: 1em;
+    color: whitesmoke;
+    h2,p{
+        text-align: center;
+    }
+}
+.kembali{
+    padding: 0;
+    display: flex;
+    justify-content: center;
+}
+.btn-back{
+    background-color: rgb(178, 36, 36);
+    color: white;
+    font-weight: 700;
+    text-decoration: none;
+}
+.btn-mulai{
+    background-color: rgb(23, 157, 112);
+    color: white;
+    font-weight: 700;
+    border: none;
+    font-size: 1.2rem;
+}
+.btn-mulai:hover{
+    background-color: rgb(15, 95, 68);
+}
+.btn-back:hover{
+    background-color: rgb(132, 25, 25);
+}

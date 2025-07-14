@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <title>Abjad Bahasa Indonesia</title>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h2>Tebak Huruf</h2>
+            
+            <div class="setting">
+                <label for="iptrange">Ubah Ukuran Huruf : <span id="sizeValue">80</span>px</label>
+                <input type="range" id="slider" min="60" max="100" value="80" id="iptrange">
+            </div>
+            <div class="setting" style="display: flex;flex-direction: column;"><span>Jumlah pertanyaan</span>
+                <select id="jml">
+                    <option value="2">2</option>
+                    <option value="10">10</option>
+                    <option value="26">All</option>
+                </select>
+            </div>
+            <div class="setting">
+                <button class="btn btn-mulai" onclick="acakpertanyaan(abjad)">Mulai</button>
+            </div>
+        </header>
+
+        <div id="btn_layout">
+
+        </div>
+        <div class="kembali">
+            <a class="btn btn-back" href="index.html">Kembali ke Menu</a>
+        </div>
+    </div>
+
+    <script>
+        const btnlayout = document.getElementById("btn_layout")
+        const inptrange = document.getElementById("iptrange")
+        let jawabanBenar = null
+        const abjad = [
+            { huruf: "A", kata: "Apel" },
+            { huruf: "B", kata: "Becak" },
+            { huruf: "C", kata: "Cicak" },
+            { huruf: "D", kata: "Durian" },
+            { huruf: "E", kata: "Elang" },
+            { huruf: "F", kata: "Flamingo" },
+            { huruf: "G", kata: "Gajah" },
+            { huruf: "H", kata: "Helikopter" },
+            { huruf: "I", kata: "Ikan" },
+            { huruf: "J", kata: "Jagung" },
+            { huruf: "K", kata: "Kambing" },
+            { huruf: "L", kata: "Lumba-lumba" },
+            { huruf: "M", kata: "Mobil" },
+            { huruf: "N", kata: "Nanas" },
+            { huruf: "O", kata: "Orangutan" },
+            { huruf: "P", kata: "Pisang" },
+            { huruf: "Q", kata: "Quran" },
+            { huruf: "R", kata: "Rumah" },
+            { huruf: "S", kata: "Semangka" },
+            { huruf: "T", kata: "Tikus" },
+            { huruf: "U", kata: "Ular" },
+            { huruf: "V", kata: "Vas bunga" },
+            { huruf: "W", kata: "Wortel" },
+            { huruf: "X", kata: "X-rayn" },
+            { huruf: "Y", kata: "Yoyo" },
+            { huruf: "Z", kata: "Zebra" }
+        ];
+
+        abjad.forEach(e => {
+            const img = document.createElement("img")
+            img.src = `huruf/${e.huruf}.png`
+            img.classList.add("huruf")
+            img.setAttribute("data-jawab", e.huruf)
+            img.onclick = () => cekjawaban()
+            img.style.width = "80px"
+
+            btnlayout.appendChild(img)
+        })
+
+
+        slider.addEventListener("input", function () {
+
+            document.querySelectorAll(".huruf").forEach(e => {
+                e.style.width = slider.value + "px";
+            })
+            document.getElementById("sizeValue").textContent = slider.value
+            //teks.style.fontSize = ukuran;
+            //nilai.textContent = slider.value;
+
+        });
+
+        function ucapan(teks) {
+            //const kalimat = `huruf ${item.huruf} untuk ${item.kata}`
+            //const jawaban = item.huruf
+            const u = new SpeechSynthesisUtterance(teks);
+            u.lang = "id-ID";
+            return new Promise((resolve) => {
+                u.onend = () => resolve()
+                speechSynthesis.cancel();
+                speechSynthesis.speak(u);
+            })
+        }
+
+        function cekjawaban() {
+            return new Promise((resolve) => {
+                const gambar = document.querySelectorAll(".huruf");
+                gambar.forEach((el) => {
+                    el.addEventListener("click", function handler(e) {
+                        gambar.forEach(g => g.removeEventListener("click", handler)); // hapus semua listener
+                        const jawab = e.currentTarget.getAttribute("data-jawab");
+                        resolve(jawab);
+                    });
+                });
+            });
+        }
+
+        async function acakpertanyaan(array) {
+            const jumlah=document.getElementById("jml").value
+            let acak = array.slice()
+            for (let i = acak.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [acak[i], acak[j]] = [acak[j], acak[i]];
+            }
+            for (const item of acak.slice(0, jumlah)) {
+                const kalimat = `cari huruf ${item.huruf} untuk ${item.kata}`
+                await ucapan(kalimat)
+                jawabanBenar = item.huruf
+
+                while (true) {
+                    const jawab = await cekjawaban(event)
+                    if (jawabanBenar == jawab) {
+                        await ucapan("ya kamu benar. ")
+                        break;
+                    } else {
+                        await ucapan(`salah, ulangi menebak huruf ${jawabanBenar} untuk${item.kata}`)
+                    }
+                }
+            }
+            await ucapan("selamat kamu berhasil menyelesaikan tebak huruf")
+
+        }
+
+
+
+        //hasil = acakpertanyaan(abjad)
+
+
+    </script>
+
+</body>
+
+</html>
