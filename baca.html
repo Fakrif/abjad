@@ -1,208 +1,93 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Abjad Bahasa Indonesia</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
-  <style>
-    #pertanyaan-teks {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 1em;
-    }
-
-    #pertanyaan-teks p {
-      font-weight: 700;
-      font-size: 3em;
-    }
-    .layoutcontrol{
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        margin-bottom: 5em;
-        button{
-            width: 120px;
-            padding: 0.5em 1em;
-            border-radius: 10px;
-        }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <title>Abjad Bahasa Indonesia</title>
+<style>
+    #kata { font-size: 2em; margin: 20px 0; color:#a90808;font-weight: 700;letter-spacing: 6px;}
+    button { font-size: 1.2em; padding: 10px 20px; }
+</style>
 </head>
 
 <body>
-  <div class="container">
     <header>
-      <h2>🎤 Tebak Huruf Abjad dengan Suara</h2>
-
-     
-
-      <div class="setting" style="display: flex; flex-direction: column;">
-        <span>Jumlah pertanyaan</span>
-        <select id="jml">
-          <option value="2">2</option>
-          <option value="10">10</option>
-          <option value="26">All</option>
-        </select>
-      </div>
-
-      <div class="setting">
-        <button class="btn btn-mulai" onclick="acakPertanyaan()">Mulai</button>
-      </div>
+        <div>
+            <h1>MEMBACA</h1>
+            
+        </div>
     </header>
+    <div class="container">
+        <section style="text-align: center;">
+            <h1>Tebak Kata dengan Suara</h1>
+            <p>Ucapkan kata yang tampil di bawah ini:</p>
+            <div id="kata">Klik "Mulai"</div>
+            <button onclick="mulai()">🎙️ Mulai</button>
+            <p id="status"></p>
+        </section>
 
-    <div id="pertanyaan-teks"></div>
-    <div class="layoutcontrol">
-    <button id="tombol-rekam" disabled>🎤 Rekam Jawaban</button>
-    <p id="hasil"></p>
+        <div class="kembali">
+            <a class="btn btn-back" href="index.html">Kembali ke Menu</a>
+        </div>
+
     </div>
 
-    <div class="kembali">
-      <a class="btn btn-back" href="index.html">Kembali ke Menu</a>
-    </div>
-  </div>
+    <script>
+        const dua_suku = ["bola", "nasi", "baju", "sapi", "mata", "bayi", "meja", "kuda", "padi", "gigi", "roti", "kaki", "kaca", "lari", "api", "pita", "ratu", "jari", "saku", "tali", "lima"];
 
-  <script>
-    const dua_suku = ["bola", "nasi", "baju", "sapi", "mata", "bayi", "meja", "kuda", "padi", "gigi", "roti", "kaki", "kaca",
-      "lari", "api", "pita", "ratu", "jari", "saku", "tali", "lima"
-    ];
+        let targetKata = "";
 
-    function bicara(teks) {
-      return new Promise((resolve) => {
-        const ucap = new SpeechSynthesisUtterance(teks);
-        ucap.lang = "id-ID";
-        ucap.onend = () => resolve();
-        speechSynthesis.cancel(); // hentikan TTS sebelumnya
-        speechSynthesis.speak(ucap);
-      });
-    }
-
-    function acak(array) {
-      const acak = array.slice();
-      for (let i = acak.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [acak[i], acak[j]] = [acak[j], acak[i]];
-      }
-      return acak;
-    }
-
-    function rekamSekali(timeoutMs = 3000) {
-      return new Promise((resolve, reject) => {
-        const recognition = new webkitSpeechRecognition();
-        recognition.lang = "id-ID";
-        recognition.interimResults = false;
-        recognition.maxAlternatives = 1;
-
-        let sudahSelesai = false;
-        const timeout = setTimeout(() => {
-          if (!sudahSelesai) {
-            recognition.abort();
-            sudahSelesai = true;
-            reject("timeout");
-          }
-        }, timeoutMs);
-
-        recognition.onresult = (event) => {
-          if (sudahSelesai) return;
-          sudahSelesai = true;
-          clearTimeout(timeout);
-          resolve(event.results[0][0].transcript);
-        };
-
-        recognition.onerror = (event) => {
-          if (sudahSelesai) return;
-          sudahSelesai = true;
-          clearTimeout(timeout);
-          reject(event.error);
-        };
-
-        recognition.start();
-      });
-    }
-
-    async function mulaiRekam(maxCoba = 2) {
-      let percobaan = 0;
-
-      while (percobaan < maxCoba) {
-        try {
-          return await rekamSekali(3000);
-        } catch (err) {
-          if (err === "no-speech" || err === "timeout") {
-            document.getElementById("hasil").innerText = "Tidak ada suara. Coba lagi...";
-            percobaan++;
-          } else {
-            throw err;
-          }
-        }
-      }
-
-      throw "Gagal merekam setelah beberapa percobaan.";
-    }
-
-    function tungguKlikDanRekam() {
-      return new Promise((resolve, reject) => {
-        const tombol = document.getElementById("tombol-rekam");
-        tombol.disabled = false;
-        tombol.innerText = "🎤 Rekam Jawaban";
-
-        const handler = async () => {
-          tombol.disabled = true;
-          tombol.innerText = "⏳ Merekam...";
-          tombol.removeEventListener("click", handler);
-
-          try {
-            const hasil = await mulaiRekam();
-            resolve(hasil);
-          } catch (err) {
-            if (err === "no-speech" || err === "timeout") {
-              document.getElementById("hasil").innerText =
-                "Tidak terdengar. Silakan klik lagi untuk merekam ulang.";
-              tombol.innerText = "🔁 Coba Ulang";
-              tombol.disabled = false;
-              tombol.addEventListener("click", handler);
-            } else {
-              reject(err);
-            }
-          }
-        };
-
-        tombol.addEventListener("click", handler);
-      });
-    }
-
-    async function acakPertanyaan() {
-      const jumlah = parseInt(document.getElementById("jml").value);
-      const pertanyaan = acak(dua_suku).slice(0, jumlah);
-
-      for (const el of pertanyaan) {
-        document.getElementById("pertanyaan-teks").innerHTML = `<p>${el}</p>`;
-        document.getElementById("hasil").innerText = "📢 Membacakan soal...";
-        speechSynthesis.cancel();
-        await bicara(el);
-
-        document.getElementById("hasil").innerText = "🎤 Klik tombol untuk merekam.";
-
-        try {
-          const hasil = await tungguKlikDanRekam();
-          document.getElementById("hasil").innerText = "✅ Jawaban: " + hasil;
-          await bicara(`Kamu menjawab ${hasil}`);
-        } catch (err) {
-          document.getElementById("hasil").innerText = "❌ Gagal merekam: " + err;
+        function pilihKataAcak() {
+            const index = Math.floor(Math.random() * dua_suku.length);
+            return dua_suku[index];
         }
 
-        await new Promise(r => setTimeout(r, 1500));
-      }
+        function mulai() {
+            // Pilih kata acak
+            targetKata = pilihKataAcak();
+            document.getElementById("kata").textContent = targetKata.toUpperCase();
 
-      document.getElementById("pertanyaan-teks").innerText = "✅ Selesai!";
-      document.getElementById("tombol-rekam").disabled = true;
-    }
-  </script>
+            // Aktifkan speech recognition
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = "id-ID"; // Bahasa Indonesia
+            recognition.start();
+
+            document.getElementById("status").textContent = "🎧 Mendengarkan...";
+
+            recognition.onresult = function (event) {
+                const hasil = event.results[0][0].transcript;
+                console.log("Hasil Ucapan:", hasil);
+
+                // Cek apakah hasil mengandung targetKata
+                if (hasil.toLowerCase().includes(targetKata.toLowerCase())) {
+                    ucapan(`ya benar kamu menjawab ${targetKata}`)
+                    document.getElementById("status").textContent = "✅ Benar!";
+                } else {
+                    ucapan(`Salah. Yang benar:  ${targetKata}. Anda mengucapkan: ${hasil}`)
+                    document.getElementById("status").textContent = `❌ Salah. Yang benar: "${targetKata}", Anda mengucapkan: "${hasil}"`;
+                }
+            };
+
+            recognition.onerror = function (event) {
+                document.getElementById("status").textContent = "❌ Error: " + event.error;
+                ucapan("suara kamu tidak terdengar")
+            };
+        }
+
+        function ucapan(text) {
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = "id-ID";
+            speechSynthesis.cancel();
+            speechSynthesis.speak(u);
+        }
+    </script>
+
 </body>
 
 </html>

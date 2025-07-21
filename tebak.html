@@ -13,145 +13,165 @@
 </head>
 
 <body>
-    <div class="container">
-        <header>
-            <h2>Tebak Huruf</h2>
-            
-            <div class="setting">
-                <label for="iptrange">Ubah Ukuran Huruf : <span id="sizeValue">80</span>px</label>
-                <input type="range" id="slider" min="60" max="100" value="80" id="iptrange">
-            </div>
-            <div class="setting" style="display: flex;flex-direction: column;"><span>Jumlah pertanyaan</span>
-                <select id="jml">
-                    <option value="2">2</option>
-                    <option value="10">10</option>
-                    <option value="26">All</option>
-                </select>
-            </div>
-            <div class="setting">
-                <button class="btn btn-mulai" onclick="acakpertanyaan(abjad)">Mulai</button>
-            </div>
-        </header>
-
-        <div id="btn_layout">
-
+    <header>
+        <div>
+            <h1>TEBAK HURUF</h1>
         </div>
+    </header>
+    <div class="container">
+        <section>
+            <p>Pilih huruf dibawah ini untuk ditampilkan!</p>
+
+            <div id="pilih">
+
+            </div>
+        </section>
+        <section class="section-btn hide">
+            <div style="display: flex;justify-content: center;align-items: center;">
+            <button id="mulaibtn" onclick="mulaiGame()">Mulai</button>
+            </div>
+            <p id="status">Klik mulai untuk memulai permainan</p>
+            <div id="btn_layout">
+
+            </div>
+            <div class="setting">
+                <label for="iptrange">Ubah Ukuran Huruf : <span id="sizeValue">60</span>px</label>
+                <input type="range" id="slider" min="60" max="100" value="60">
+            </div>
+        </section>
+        <p class="text-awal" style="padding: 9px;">Belum ada huruf yang dipilih</p>
         <div class="kembali">
             <a class="btn btn-back" href="index.html">Kembali ke Menu</a>
         </div>
+
     </div>
 
     <script>
         const btnlayout = document.getElementById("btn_layout")
-        const inptrange = document.getElementById("iptrange")
-        let jawabanBenar = null
-        const abjad = [
-            { huruf: "A", kata: "Apel" },
-            { huruf: "B", kata: "Becak" },
-            { huruf: "C", kata: "Cicak" },
-            { huruf: "D", kata: "Durian" },
-            { huruf: "E", kata: "Elang" },
-            { huruf: "F", kata: "Flamingo" },
-            { huruf: "G", kata: "Gajah" },
-            { huruf: "H", kata: "Helikopter" },
-            { huruf: "I", kata: "Ikan" },
-            { huruf: "J", kata: "Jagung" },
-            { huruf: "K", kata: "Kambing" },
-            { huruf: "L", kata: "Lumba-lumba" },
-            { huruf: "M", kata: "Mobil" },
-            { huruf: "N", kata: "Nanas" },
-            { huruf: "O", kata: "Orangutan" },
-            { huruf: "P", kata: "Pisang" },
-            { huruf: "Q", kata: "Quran" },
-            { huruf: "R", kata: "Rumah" },
-            { huruf: "S", kata: "Semangka" },
-            { huruf: "T", kata: "Tikus" },
-            { huruf: "U", kata: "Ular" },
-            { huruf: "V", kata: "Vas bunga" },
-            { huruf: "W", kata: "Wortel" },
-            { huruf: "X", kata: "X-rayn" },
-            { huruf: "Y", kata: "Yoyo" },
-            { huruf: "Z", kata: "Zebra" }
-        ];
+        const slider = document.getElementById("slider")
+        const pilih = document.getElementById("pilih")
+        let targetHuruf = "";
+        let gameBerjalan = false;
+        let soal = []
+        const sectionbtn = document.querySelector(".section-btn")
+        const abjad = {
+            A: "Apel", B: "Becak", C: "Cicak", D: "Durian", E: "Elang", F: "Flamingo",
+            G: "Gajah", H: "Helikopter", I: "Ikan", J: "Jagung", K: "Kambing", L: "Lumba-lumba", M: "Mobil",
+            N: "Nanas", O: "Orangutan", P: "Pisang", Q: "Quran", R: "Rumah", S: "Semangka", T: "Tikus",
+            U: "Ular", V: "Vas bunga", W: "Wortel", X: "X-rayn", Y: "Yoyo", Z: "Zebra"
+        }
 
-        abjad.forEach(e => {
-            const img = document.createElement("img")
-            img.src = `huruf/${e.huruf}.png`
-            img.classList.add("huruf")
-            img.setAttribute("data-jawab", e.huruf)
-            img.onclick = () => cekjawaban()
-            img.style.width = "80px"
+        function displaypil() {
+            let temp = ""
+            for (let key in abjad) {
+                const div = document.createElement("div")
+                temp += `<input type="checkbox" id="huruf_${key}" class="cekbox"><label for=huruf_${key}>${key}</label>`
+            }
 
-            btnlayout.appendChild(img)
+            pilih.innerHTML = temp
+        }
+        displaypil()
+
+        pilih.addEventListener("click", e => {
+            if (e.target.classList.contains("cekbox")) {
+                //let huruf=e.target.id.slice(-1)
+                let arrcek = []
+                const allCekbox = document.querySelectorAll(".cekbox")
+                for (const huruf of allCekbox) {
+                    if (huruf.checked) {
+                        arrcek.push(huruf.id.slice(-1))
+                    }
+                }
+                subhuruf(arrcek)
+            }
         })
 
+        function getSoal(){
+            let arrcek = []
+                const allCekbox = document.querySelectorAll(".cekbox")
+                for (const huruf of allCekbox) {
+                    if (huruf.checked) {
+                        arrcek.push(huruf.id.slice(-1))
+                    }
+                }
+            return arrcek
+        }
 
+        function subhuruf(arr) {
+            btnlayout.innerHTML = ""
+            if (arr.length == 0) {
+                sectionbtn.classList.add("hide")
+                document.querySelector(".text-awal").classList.remove("hide")
+            } else {
+                sectionbtn.classList.remove("hide")
+                document.querySelector(".text-awal").classList.add("hide")
+
+            }
+            arr.forEach(a => {
+                const img = document.createElement("img")
+                img.src = `hurufgambar/${a}.png`
+                img.style.width = slider.value + "px"
+                img.classList.add("huruf")
+                img.onclick = () => {
+                    if (gameBerjalan) cekJawaban(a);
+                };
+                btnlayout.appendChild(img)
+            })
+            //suku.appendChild(btn)
+        }
+        function ucapan(text) {
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = "id-ID";
+            speechSynthesis.cancel();
+            speechSynthesis.speak(u);
+        }
         slider.addEventListener("input", function () {
-
             document.querySelectorAll(".huruf").forEach(e => {
                 e.style.width = slider.value + "px";
             })
             document.getElementById("sizeValue").textContent = slider.value
-            //teks.style.fontSize = ukuran;
-            //nilai.textContent = slider.value;
-
         });
 
-        function ucapan(teks) {
-            //const kalimat = `huruf ${item.huruf} untuk ${item.kata}`
-            //const jawaban = item.huruf
-            const u = new SpeechSynthesisUtterance(teks);
-            u.lang = "id-ID";
-            return new Promise((resolve) => {
-                u.onend = () => resolve()
-                speechSynthesis.cancel();
-                speechSynthesis.speak(u);
-            })
+        async function mulaiGame() {            
+            gameBerjalan = true;
+            document.getElementById("status").textContent = "Permainan dimulai...";
+            soal=await getSoal()
+            await acaksoal()
+            await putarSoal(); // langsung mulai soal pertama
+        }
+        function putarSoal() {
+            const pertanyaan = soal.pop()
+            if(!pertanyaan){
+                document.getElementById("status").textContent = "selesai...😊";
+                ucapan("selamat kamu berhasil menyelesaikan permainan tebak huruf")
+                return
+            }
+            targetHuruf = pertanyaan
+            kalimat = `carilah huruf ${targetHuruf} untuk ${abjad[targetHuruf]}`
+            ucapan(kalimat)
+            document.getElementById("status").textContent = "🎧 Dengarkan hurufnya...";
+
         }
 
-        function cekjawaban() {
-            return new Promise((resolve) => {
-                const gambar = document.querySelectorAll(".huruf");
-                gambar.forEach((el) => {
-                    el.addEventListener("click", function handler(e) {
-                        gambar.forEach(g => g.removeEventListener("click", handler)); // hapus semua listener
-                        const jawab = e.currentTarget.getAttribute("data-jawab");
-                        resolve(jawab);
-                    });
-                });
-            });
-        }
-
-        async function acakpertanyaan(array) {
-            const jumlah=document.getElementById("jml").value
-            let acak = array.slice()
-            for (let i = acak.length - 1; i > 0; i--) {
+        function acaksoal() {
+            for (let i = soal.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
-                [acak[i], acak[j]] = [acak[j], acak[i]];
+                [soal[i], soal[j]] = [soal[j], soal[i]];
             }
-            for (const item of acak.slice(0, jumlah)) {
-                const kalimat = `cari huruf ${item.huruf} untuk ${item.kata}`
-                await ucapan(kalimat)
-                jawabanBenar = item.huruf
-
-                while (true) {
-                    const jawab = await cekjawaban(event)
-                    if (jawabanBenar == jawab) {
-                        await ucapan("ya kamu benar. ")
-                        break;
-                    } else {
-                        await ucapan(`salah, ulangi menebak huruf ${jawabanBenar} untuk${item.kata}`)
-                    }
-                }
-            }
-            await ucapan("selamat kamu berhasil menyelesaikan tebak huruf")
-
         }
 
-
-
-        //hasil = acakpertanyaan(abjad)
-
+        function cekJawaban(hurufDitebak) {
+            if (hurufDitebak === targetHuruf) {
+                ucapan("Hebat! kamu Benar!");
+                document.getElementById("status").textContent = `✅ Benar: ${hurufDitebak}`;
+                setTimeout(() => {
+                    putarSoal(); // lanjut soal baru setelah 1 detik
+                }, 3000);
+            } else {
+                ucapan(`Salah. Coba lagi.${targetHuruf} untuk ${abjad[targetHuruf]}`);
+                document.getElementById("status").textContent = `❌ Salah: ${hurufDitebak}`;
+            }
+        }
 
     </script>
 

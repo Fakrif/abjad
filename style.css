@@ -13,57 +13,80 @@ body{
     margin-inline:auto;
     padding-bottom: 1em;
 }
+:root{
+    --bg-clr:rgb(41, 116, 148);
+    --hover-clr:gray;
+    --text1-clr:whitesmoke;
 
+}
 
 .menu{
-    box-shadow: 3px 3px 3px gray;
-    width: min(400px,90%);
-    margin-top: 5%;
+    background-color: var(--bg-clr);
+    color:var(--text1-clr);
+    display: grid;
+    width: min(300px,100%);
     margin-inline: auto;
-    padding: 1em;
-    background-color: rgb(15, 108, 124);
+    margin-top: 10%;
+    justify-content: center;
+    align-items: center;
+    padding:2em 0.5em;
+    border-radius: 1em;
     h1{
-        color: white;
+        margin-bottom: 1em;
         text-align: center;
     }
     a{
-        display: block;
-        background-color: whitesmoke;
-        padding: 0.5em 1em;
-        margin: 1em;
-        border-radius: 3px;
+        padding: 12px;
         text-decoration: none;
-        box-shadow: 3px 3px 3px gray;
-        color: rgb(15, 108, 124);
-        font-weight: bold;
-        font-size: 1.2rem;
+        color: var(--text1-clr);
+        border-bottom: 1px solid var(--text1-clr);
+    }
+    a:hover{
+        background-color: var(--hover-clr)
+        
     }
 }
-
-
-
-
-
-.btn{    
-    padding: 0.5em 1em;
-    border-radius: 5px;
-    cursor: pointer;
+header{
+    margin-bottom: 12px;
+    box-shadow: 3px 3px 3px gray;
+    background-color: var(--bg-clr);
+    color: var(--text1-clr);
+    padding: 9px;
+    
+}
+header > div{
+    width: min(1080px,100%);
+    margin-inline: auto;
 }
 
-#btn_layout{
+#pilih{
+    display: grid;
+    gap:6px;
+    justify-content: end;
+    align-items: top;
+    grid-template-columns: repeat(auto-fill,minmax(30px,1fr));
+}
+.cekbox{
+    display: none;
+}
+
+.cekbox+label{
+    text-align: center;
+    width: 100%;
+    height: 30px;
     display: flex;
-    flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    margin-bottom: 12px;
+    cursor: pointer;
+    border-radius: 3px;
+    border: 1px solid var(--bg-clr);
 }
-.setting{
-    display: flex;
-    flex-direction: column;
-    max-width: 200px;
-    margin:12px auto;
 
-    
+
+.cekbox:checked+label {
+            background-color: #86d6b2;
+            color: white;
+            border-color: #4CAF50;
 }
 .huruf{
     box-shadow: 3px 3px 3px gray;
@@ -72,35 +95,32 @@ body{
     border:0.2px solid rgb(15, 108, 124);
     cursor:pointer;
 }
-header{
-    background-color: rgb(15, 108, 124);
-    padding: 1em;
-    color: whitesmoke;
-    h2,p{
-        text-align: center;
-    }
+
+section{
+    box-shadow: 3px 3px 3px gray;
+    padding: 9px;
+    border:1px solid gray;
+    margin-bottom: 1em;
+    border-radius: 5px;
+}
+.hide{
+    display: none;
 }
 .kembali{
-    padding: 0;
-    display: flex;
-    justify-content: center;
+    margin-top: 24px;
+    a{
+        background-color: red;
+        color: var(--text1-clr);
+        padding: 9px;
+        text-decoration: none;
+    }
 }
-.btn-back{
-    background-color: rgb(178, 36, 36);
-    color: white;
+#mulaibtn{
+    padding:0.5em 1em;
+    background-color: rgb(95 108 235);
+    color:var(--text1-clr);
     font-weight: 700;
-    text-decoration: none;
-}
-.btn-mulai{
-    background-color: rgb(23, 157, 112);
-    color: white;
-    font-weight: 700;
-    border: none;
-    font-size: 1.2rem;
-}
-.btn-mulai:hover{
-    background-color: rgb(15, 95, 68);
-}
-.btn-back:hover{
-    background-color: rgb(132, 25, 25);
+    border:none;
+    border-radius: 5px;
+    font-size: 1rem;
 }
